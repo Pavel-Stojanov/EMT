@@ -5,6 +5,7 @@ import mk.ukim.finki.library_api.model.domain.Author;
 import mk.ukim.finki.library_api.model.domain.Book;
 import mk.ukim.finki.library_api.model.dto.CreateBookDto;
 import mk.ukim.finki.library_api.model.dto.DisplayBookDto;
+import mk.ukim.finki.library_api.model.enums.Category;
 import mk.ukim.finki.library_api.model.enums.State;
 import mk.ukim.finki.library_api.model.exception.NoAvailableCopiesException;
 import mk.ukim.finki.library_api.service.application.BookApplicationService;
@@ -22,8 +23,8 @@ public class BookApplicationServiceImpl implements BookApplicationService {
     private final AuthorService authorService;
 
     @Override
-    public List<DisplayBookDto> getAllBooks() {
-        return DisplayBookDto.from(bookService.findAll());
+    public List<DisplayBookDto> getAllBooks( Category category, State state, Long authorId) {
+        return DisplayBookDto.from(bookService.filter(category,state,authorId));
     }
 
     @Override

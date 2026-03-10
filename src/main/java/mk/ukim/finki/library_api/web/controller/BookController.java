@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mk.ukim.finki.library_api.model.dto.CreateBookDto;
 import mk.ukim.finki.library_api.model.dto.DisplayBookDto;
+import mk.ukim.finki.library_api.model.enums.Category;
+import mk.ukim.finki.library_api.model.enums.State;
 import mk.ukim.finki.library_api.service.application.BookApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,10 @@ public class BookController {
     private final BookApplicationService bookApplicationService;
 
     @GetMapping
-    public List<DisplayBookDto> getAllBooks() {
-        return bookApplicationService.getAllBooks();
+    public List<DisplayBookDto> getAllBooks(@RequestParam(required = false) Category category,
+                                            @RequestParam(required = false) State state,
+                                            @RequestParam(required = false) Long authorId) {
+        return bookApplicationService.getAllBooks(category, state, authorId);
     }
 
     @GetMapping("/{id}")
@@ -34,7 +38,8 @@ public class BookController {
     }
 
     @PutMapping("/{id}/edit")
-    public ResponseEntity<DisplayBookDto> updateBook(@PathVariable Long id, @Valid @RequestBody CreateBookDto bookDto) {
+    public ResponseEntity<DisplayBookDto> updateBook(@PathVariable Long id,
+                                                     @Valid @RequestBody CreateBookDto bookDto) {
         DisplayBookDto displayBookDto = bookApplicationService.updateBook(id, bookDto);
         return ResponseEntity.ok(displayBookDto);
     }

@@ -6,11 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mk.ukim.finki.library_api.model.enums.Category;
 import mk.ukim.finki.library_api.model.enums.State;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE book SET deleted = TRUE where id = ?")
+@SQLRestriction("deleted = false")
 public class Book extends BaseAuditableEntity{
     private String name;
     @Enumerated(EnumType.STRING)
