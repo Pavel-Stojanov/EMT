@@ -1,6 +1,7 @@
 package mk.ukim.finki.library_api.service.application.impl;
 
 import lombok.RequiredArgsConstructor;
+import mk.ukim.finki.library_api.events.BookRentedEvent;
 import mk.ukim.finki.library_api.model.domain.Author;
 import mk.ukim.finki.library_api.model.domain.Book;
 import mk.ukim.finki.library_api.model.dto.CreateBookDto;
@@ -8,9 +9,18 @@ import mk.ukim.finki.library_api.model.dto.DisplayBookDto;
 import mk.ukim.finki.library_api.model.enums.Category;
 import mk.ukim.finki.library_api.model.enums.State;
 import mk.ukim.finki.library_api.model.exception.NoAvailableCopiesException;
+import mk.ukim.finki.library_api.model.projections.BookExpandedProjection;
+import mk.ukim.finki.library_api.model.projections.BookShortProjection;
+import mk.ukim.finki.library_api.model.views.BookView;
+import mk.ukim.finki.library_api.model.views.CategoryStatisticsView;
 import mk.ukim.finki.library_api.service.application.BookApplicationService;
 import mk.ukim.finki.library_api.service.domain.AuthorService;
 import mk.ukim.finki.library_api.service.domain.BookService;
+import mk.ukim.finki.library_api.service.domain.BookViewService;
+import mk.ukim.finki.library_api.service.domain.CategoryStatisticsService;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +31,13 @@ import java.util.List;
 public class BookApplicationServiceImpl implements BookApplicationService {
     private final BookService bookService;
     private final AuthorService authorService;
+    private final ApplicationEventPublisher eventPublisher;
+    private final BookViewService bookViewService;
+    private final CategoryStatisticsService categoryStatisticsService;
 
     @Override
-    public List<DisplayBookDto> getAllBooks( Category category, State state, Long authorId) {
-        return DisplayBookDto.from(bookService.filter(category,state,authorId));
+    public Page<DisplayBookDto> getAllBooks(Category category, State state, Long authorId, Boolean hasAvailable, Pageable pageable) {
+        return bookService.filter(category,state,authorId,hasAvailable,pageable).map(DisplayBookDto::from);
     }
 
     @Override
@@ -86,6 +99,28 @@ public class BookApplicationServiceImpl implements BookApplicationService {
 
         Book updatedBook = bookService.save(book);
 
+        eventPublisher.publishEvent( new BookRentedEvent(book.getId(),book.getName(),book.getAvailableCopies()));
+
         return DisplayBookDto.from(updatedBook);
+    }
+
+    @Override
+    public Page<BookShortProjection> getShortProjections(Pageable pageable) {
+        return bookService.findAllShortProjections(pageable);
+    }
+
+    @Override
+    public Page<BookExpandedProjection> getExpandedProjections(Pageable pageable) {
+        return bookService.findAllExpandedProjections(pageable);
+    }
+
+    @Override
+    public Page<BookView> getDatabaseView(Pageable pageable) {
+        return bookViewService.findAll(pageable);
+    }
+
+    @Override
+    public List<CategoryStatisticsView> getMaterializedViewStatistics() {
+        return categoryStatisticsService.findAll();
     }
 }

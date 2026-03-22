@@ -3,11 +3,13 @@ package mk.ukim.finki.library_api.service.domain;
 import mk.ukim.finki.library_api.model.domain.Book;
 import mk.ukim.finki.library_api.model.enums.Category;
 import mk.ukim.finki.library_api.model.enums.State;
-
-import java.util.List;
+import mk.ukim.finki.library_api.model.projections.BookExpandedProjection;
+import mk.ukim.finki.library_api.model.projections.BookShortProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BookService {
-    List<Book> findAll();
+    Page<Book> findAll(Pageable pageable);
 
     Book findById(Long id);
 
@@ -15,5 +17,9 @@ public interface BookService {
 
     void delete(Book book);
 
-    List<Book> filter (Category category, State state, Long authorId);
+    Page<Book> filter(Category category, State state, Long authorId, Boolean hasAvailable, Pageable pageable);
+
+    Page<BookShortProjection> findAllShortProjections(Pageable pageable);
+
+    Page<BookExpandedProjection> findAllExpandedProjections(Pageable pageable);
 }

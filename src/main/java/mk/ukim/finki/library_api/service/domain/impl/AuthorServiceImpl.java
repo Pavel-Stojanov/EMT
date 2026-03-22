@@ -5,6 +5,8 @@ import mk.ukim.finki.library_api.model.domain.Author;
 import mk.ukim.finki.library_api.model.exception.AuthorNotFoundException;
 import mk.ukim.finki.library_api.repository.AuthorRepository;
 import mk.ukim.finki.library_api.service.domain.AuthorService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +15,23 @@ public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
 
     @Override
+    public Page<Author> findAll(Pageable pageable) {
+        return authorRepository.findAll(pageable);
+    }
+
+    @Override
     public Author findById(Long id) {
         return authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
+    }
+
+    @Override
+    public Author save(Author author) {
+        return authorRepository.save(author);
+    }
+
+    @Override
+    public void delete(Long id) {
+        Author author = findById(id);
+        authorRepository.delete(author);
     }
 }
