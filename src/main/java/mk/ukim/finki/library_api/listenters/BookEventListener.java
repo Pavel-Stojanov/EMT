@@ -17,15 +17,15 @@ public class BookEventListener {
     private final ActivityLogRepository activityLogRepository;
 
     @EventListener
-    public void onBookRented(BookRentedEvent event){
-        log.info("Event: Book {} was rented",event.bookName());
+    public void onBookRented(BookRentedEvent event) {
+        log.info("Event: Book {} was rented", event.bookName());
 
-        ActivityLog logEntry = new ActivityLog(event.bookName(), LocalDateTime.now(),"RENTED");
+        ActivityLog logEntry = new ActivityLog(event.bookName(), LocalDateTime.now(), "RENTED");
         activityLogRepository.save(logEntry);
 
-        if (event.remainingCopies() == 0){
-            log.warn("WARNING: Book {} is no longer available (0 copies)",event.bookName());
-            ActivityLog unavailableLog = new ActivityLog(event.bookName(), LocalDateTime.now(),"UNAVAILABLE");
+        if (event.remainingCopies() == 0) {
+            log.warn("WARNING: Book {} is no longer available (0 copies)", event.bookName());
+            ActivityLog unavailableLog = new ActivityLog(event.bookName(), LocalDateTime.now(), "UNAVAILABLE");
             activityLogRepository.save(unavailableLog);
         }
     }

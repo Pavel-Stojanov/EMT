@@ -14,16 +14,14 @@ import mk.ukim.finki.library_api.model.projections.BookShortProjection;
 import mk.ukim.finki.library_api.model.views.BookView;
 import mk.ukim.finki.library_api.model.views.CategoryStatisticsView;
 import mk.ukim.finki.library_api.service.application.BookApplicationService;
-import mk.ukim.finki.library_api.service.domain.AuthorService;
-import mk.ukim.finki.library_api.service.domain.BookService;
-import mk.ukim.finki.library_api.service.domain.BookViewService;
-import mk.ukim.finki.library_api.service.domain.CategoryStatisticsService;
+import mk.ukim.finki.library_api.service.domain.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -34,10 +32,11 @@ public class BookApplicationServiceImpl implements BookApplicationService {
     private final ApplicationEventPublisher eventPublisher;
     private final BookViewService bookViewService;
     private final CategoryStatisticsService categoryStatisticsService;
+    private final BookHistoryService bookHistoryService;
 
     @Override
     public Page<DisplayBookDto> getAllBooks(Category category, State state, Long authorId, Boolean hasAvailable, Pageable pageable) {
-        return bookService.filter(category,state,authorId,hasAvailable,pageable).map(DisplayBookDto::from);
+        return bookService.filter(category, state, authorId, hasAvailable, pageable).map(DisplayBookDto::from);
     }
 
     @Override
@@ -54,6 +53,9 @@ public class BookApplicationServiceImpl implements BookApplicationService {
         Book bookToSave = bookDto.toBook(author);
 
         Book savedBook = bookService.save(bookToSave);
+
+        bookHistoryService.addHistoryEntry(savedBook.getId(), "Added book with id " + savedBook.getId() + " in " + LocalDateTime.now());
+
         return DisplayBookDto.from(savedBook);
     }
 
@@ -70,6 +72,9 @@ public class BookApplicationServiceImpl implements BookApplicationService {
         book.setAvailableCopies(bookDto.availableCopies());
 
         Book updatedBook = bookService.save(book);
+
+        bookHistoryService.addHistoryEntry(updatedBook.getId(), "Updated book with id " + updatedBook.getId() + " in " + LocalDateTime.now());
+
         return DisplayBookDto.from(updatedBook);
     }
 
@@ -81,6 +86,9 @@ public class BookApplicationServiceImpl implements BookApplicationService {
         if (book.getState() == State.GOOD) {
             throw new RuntimeException("Не може да се избрише книга која е во добра состојба.");
         }
+
+        bookHistoryService.addHistoryEntry(book.getId(), "Deleted book with id " + book.getId() + " in " + LocalDateTime.now());
+
 
         bookService.delete(book);
 
@@ -99,7 +107,10 @@ public class BookApplicationServiceImpl implements BookApplicationService {
 
         Book updatedBook = bookService.save(book);
 
-        eventPublisher.publishEvent( new BookRentedEvent(book.getId(),book.getName(),book.getAvailableCopies()));
+        eventPublisher.publishEvent(new BookRentedEvent(book.getId(), book.getName(), book.getAvailableCopies()));
+
+        bookHistoryService.addHistoryEntry(updatedBook.getId(), "Rented book with id " + updatedBook.getId() + " in " + LocalDateTime.now());
+
 
         return DisplayBookDto.from(updatedBook);
     }
