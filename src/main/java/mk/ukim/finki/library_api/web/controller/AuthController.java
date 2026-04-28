@@ -53,7 +53,7 @@ public class AuthController {
         user.setRole(Role.ROLE_USER);
 
         userRepository.save(user);
-
+        
         String jwtToken = jwtService.generateToken(user);
         return ResponseEntity.ok(new LoginResponse(jwtToken));
     }

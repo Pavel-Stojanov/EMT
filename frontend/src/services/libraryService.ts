@@ -1,4 +1,4 @@
-import type {Author, Book, Country, PageResponse} from '../types';
+import type {Author, Book, CategoryStatistics, Country, PageResponse} from '../types';
 import api from "../api.ts";
 
 export const libraryService = {
@@ -13,6 +13,9 @@ export const libraryService = {
     },
     fetchAuthors: () => {
         return api.get<PageResponse<Author>>('/authors');
+    },
+    fetchCategoryStatistics: () => {
+        return api.get<CategoryStatistics[]>('books/views/materialized-statistics');
     },
     fetchCountries: () => {
         return api.get<Country[]>('/countries');

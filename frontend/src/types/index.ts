@@ -27,3 +27,10 @@ export interface PageResponse<T> {
     size: number;
     number: number;
 }
+
+export interface CategoryStatistics {
+    category: string;
+    totalBooks: number;
+    totalAvailableCopies: number;
+    booksInBadState: number;
+}

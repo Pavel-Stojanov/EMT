@@ -22,11 +22,12 @@ export default function Header() {
                     <Button color={"inherit"} component={Link} to={"/books"}>Books</Button>
                     <Button color={"inherit"} component={Link} to={"/authors"}>Authors</Button>
                     <Button color={"inherit"} component={Link} to={"/countries"}>Countries</Button>
+                    <Button color={"inherit"} component={Link} to={"/statistics"}>Statistics</Button>
 
                     {isAuthenticated ? (
-                        <Button color={"warning"} onClick={handleLogout} sx={{ml:2}}>Logout</Button>
-                    ):(
-                        <Button color={"inherit"} component={Link} to={"/login"} sx={{ml:2}}>Login</Button>
+                        <Button color={"warning"} onClick={handleLogout} sx={{ml: 2}}>Logout</Button>
+                    ) : (
+                        <Button color={"inherit"} component={Link} to={"/login"} sx={{ml: 2}}>Login</Button>
                     )}
                 </Box>
             </Toolbar>
