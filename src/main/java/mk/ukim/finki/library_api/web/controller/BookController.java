@@ -31,7 +31,7 @@ public class BookController {
                                             @RequestParam(required = false) Long authorId,
                                             @RequestParam(required = false) Boolean hasAvailable,
                                             Pageable pageable) {
-        return bookApplicationService.getAllBooks(category, state, authorId,hasAvailable,pageable);
+        return bookApplicationService.getAllBooks(category, state, authorId, hasAvailable, pageable);
     }
 
     @GetMapping("/{id}")
@@ -65,22 +65,22 @@ public class BookController {
     }
 
     @GetMapping("/projections/short")
-    public Page<BookShortProjection> getShortProjections(Pageable pageable){
+    public Page<BookShortProjection> getShortProjections(Pageable pageable) {
         return bookApplicationService.getShortProjections(pageable);
     }
 
     @GetMapping("/projections/expanded")
-    public Page<BookExpandedProjection> getExpandedProjections(Pageable pageable){
+    public Page<BookExpandedProjection> getExpandedProjections(Pageable pageable) {
         return bookApplicationService.getExpandedProjections(pageable);
     }
 
     @GetMapping("/views/database")
-    public Page<BookView> getDatabaseView(Pageable pageable){
+    public Page<BookView> getDatabaseView(Pageable pageable) {
         return bookApplicationService.getDatabaseView(pageable);
     }
 
     @GetMapping("/views/materialized-statistics")
-    public List<CategoryStatisticsView> getMaterializedViewStatistics(){
+    public List<CategoryStatisticsView> getMaterializedViewStatistics() {
         return bookApplicationService.getMaterializedViewStatistics();
     }
 

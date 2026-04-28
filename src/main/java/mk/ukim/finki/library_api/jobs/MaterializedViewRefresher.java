@@ -15,7 +15,7 @@ public class MaterializedViewRefresher {
 
     @Scheduled(cron = "0 * * * * *")
     @Transactional
-    public void refreshMaterializedView(){
+    public void refreshMaterializedView() {
         log.info("Refreshing category_statistics_mview...");
         categoryStatisticsRepository.refresh();
         log.info("Finished refresh for category_statistics_mview.");

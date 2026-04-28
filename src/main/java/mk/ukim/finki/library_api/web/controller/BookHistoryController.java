@@ -1,7 +1,6 @@
 package mk.ukim.finki.library_api.web.controller;
 
 import lombok.RequiredArgsConstructor;
-import mk.ukim.finki.library_api.model.domain.BookHistory;
 import mk.ukim.finki.library_api.model.dto.DisplayBookHistoryDto;
 import mk.ukim.finki.library_api.service.domain.BookHistoryService;
 import org.springframework.http.ResponseEntity;

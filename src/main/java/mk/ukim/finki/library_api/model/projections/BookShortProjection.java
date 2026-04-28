@@ -5,8 +5,12 @@ import mk.ukim.finki.library_api.model.enums.State;
 
 public interface BookShortProjection {
     Long getId();
+
     String getName();
+
     Category getCategory();
+
     State getState();
+
     Integer getAvailableCopies();
 }

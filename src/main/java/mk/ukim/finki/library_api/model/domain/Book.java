@@ -1,6 +1,9 @@
 package mk.ukim.finki.library_api.model.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +18,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE book SET deleted = TRUE where id = ?")
 @SQLRestriction("deleted = false")
-public class Book extends BaseAuditableEntity{
+public class Book extends BaseAuditableEntity {
     private String name;
     @Enumerated(EnumType.STRING)
     private Category category;

@@ -7,7 +7,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface AuthorApplicationService {
     Page<DisplayAuthorDto> getAllAuthors(Pageable pageable);
+
     DisplayAuthorDto getAuthorById(Long id);
+
     DisplayAuthorDto createAuthor(CreateAuthorDto authorDto);
+
     void deleteAuthor(Long id);
 }

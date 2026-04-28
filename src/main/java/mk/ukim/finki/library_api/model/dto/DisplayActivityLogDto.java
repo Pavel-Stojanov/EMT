@@ -10,7 +10,7 @@ public record DisplayActivityLogDto(
         LocalDateTime eventTime,
         String eventType
 ) {
-    public static DisplayActivityLogDto from(ActivityLog activityLog){
+    public static DisplayActivityLogDto from(ActivityLog activityLog) {
         return new DisplayActivityLogDto(
                 activityLog.getId(),
                 activityLog.getBookName(),

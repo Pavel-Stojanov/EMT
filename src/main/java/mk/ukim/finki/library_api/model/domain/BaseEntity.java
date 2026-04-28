@@ -13,5 +13,5 @@ public abstract class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private  boolean deleted = false;
+    private boolean deleted = false;
 }

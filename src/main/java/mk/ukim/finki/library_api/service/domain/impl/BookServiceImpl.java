@@ -40,7 +40,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Page<Book> filter(Category category, State state, Long authorId, Boolean hasAvailable, Pageable pageable) {
-        return bookRepository.filter(category, state, authorId,hasAvailable,pageable);
+        return bookRepository.filter(category, state, authorId, hasAvailable, pageable);
 
     }
 

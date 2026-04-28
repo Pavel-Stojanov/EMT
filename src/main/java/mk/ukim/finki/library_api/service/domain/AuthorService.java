@@ -6,7 +6,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface AuthorService {
     Page<Author> findAll(Pageable pageable);
+
     Author findById(Long id);
+
     Author save(Author author);
+
     void delete(Long id);
 }

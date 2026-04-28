@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaAuditing
 public class LibraryApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(LibraryApiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(LibraryApiApplication.class, args);
+    }
 
 }

@@ -1,6 +1,6 @@
 package mk.ukim.finki.library_api.model.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Country extends BaseEntity{
+public class Country extends BaseEntity {
     private String name;
     private String continent;
 }

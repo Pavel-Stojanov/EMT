@@ -21,7 +21,7 @@ public record CreateBookDto(
         @Min(value = 0, message = "Бројот на достапни копии не може да биде негативен")
         Integer availableCopies
 ) {
-    public Book toBook(Author author){
-        return new Book(name,category,author,state,availableCopies);
+    public Book toBook(Author author) {
+        return new Book(name, category, author, state, availableCopies);
     }
 }

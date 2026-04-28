@@ -17,7 +17,7 @@ public class BookHistory {
     private Long id;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "book_history_descriptions",joinColumns = @JoinColumn(name = "book_id"))
+    @CollectionTable(name = "book_history_descriptions", joinColumns = @JoinColumn(name = "book_id"))
     @Column(name = "description")
     private List<String> descriptions = new ArrayList<>();
 
