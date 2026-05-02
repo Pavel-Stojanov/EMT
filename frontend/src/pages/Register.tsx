@@ -1,32 +1,37 @@
-import {useState} from 'react';
+import {useState, type ChangeEvent, type FormEvent} from 'react';
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import {Alert, Box, Button, Link, Paper, TextField, Typography} from '@mui/material';
-import {libraryService} from '../services/libraryService';
+import {useAuth} from '../hooks/useAuth';
+import type {RegisterRequest} from '../types';
 
 export default function Register() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<RegisterRequest>({
         name: '',
         surname: '',
         username: '',
         password: ''
     });
     const [error, setError] = useState<string | null>(null);
+    const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
+    const {register} = useAuth();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setFormData({...formData, [e.target.name]: e.target.value});
     };
 
-    const handleRegister = async (e: React.FormEvent) => {
+    const handleRegister = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
+        setSubmitting(true);
 
         try {
-            const response = await libraryService.register(formData);
-            localStorage.setItem('jwt_token', response.data.token);
-            navigate('/books');
-        } catch (err) {
+            await register(formData);
+            navigate('/books', {replace: true});
+        } catch {
             setError('Error while registering, maybe the username already exists.');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -48,8 +53,8 @@ export default function Register() {
                     <TextField fullWidth label="Password" name="password" type="password" margin="normal" required
                                onChange={handleChange}/>
 
-                    <Button fullWidth type="submit" variant="contained" color="primary" sx={{mt: 3, mb: 2}}>
-                        Register
+                    <Button fullWidth type="submit" variant="contained" color="primary" disabled={submitting} sx={{mt: 3, mb: 2}}>
+                        {submitting ? 'Registering...' : 'Register'}
                     </Button>
                 </form>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type {Author} from '../types';
-import { libraryService } from '../services/libraryService';
+import { authorsRepository } from '../repositories/authorsRepository';
 
 export const useAuthors = () => {
     const [authors, setAuthors] = useState<Author[]>([]);
@@ -10,9 +10,8 @@ export const useAuthors = () => {
     useEffect(() => {
         const loadAuthors = async () => {
             try {
-                const response = await libraryService.fetchAuthors();
-                setAuthors(response.data.content);
-            } catch (err) {
+                setAuthors(await authorsRepository.getAll());
+            } catch {
                 setError('Грешка при вчитување на авторите.');
             } finally {
                 setLoading(false);
@@ -23,4 +22,32 @@ export const useAuthors = () => {
     }, []);
 
     return { authors, loading, error };
+};
+
+export const useAuthor = (id: string | undefined) => {
+    const [author, setAuthor] = useState<Author | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const loadAuthor = async () => {
+            if (!id) {
+                setError('Author id is missing.');
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setAuthor(await authorsRepository.getById(id));
+            } catch {
+                setError('Грешка при вчитување на деталите за авторот.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadAuthor();
+    }, [id]);
+
+    return { author, loading, error };
 };

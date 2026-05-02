@@ -1,5 +1,5 @@
 import {
-    CircularProgress,
+    Button,
     Paper,
     Table, TableBody,
     TableCell,
@@ -8,19 +8,24 @@ import {
     TableRow,
     Typography
 } from "@mui/material";
+import {Link as RouterLink} from "react-router-dom";
 import {useBooks} from "../hooks/useBooks.ts";
+import {EmptyState, ErrorState, LoadingState} from "../components/PageState";
 
 export default function Books() {
     const {books, loading, error} = useBooks();
 
-    if (loading) return <CircularProgress/>
-    if (error) return <Typography color={"error"}>{error}</Typography>
+    if (loading) return <LoadingState/>
+    if (error) return <ErrorState message={error}/>
 
     return (
         <>
             <Typography variant={'h4'} gutterBottom sx={{textAlign:"center"}}>
                 Books
             </Typography>
+            {books.length === 0 ? (
+                <EmptyState message="There are no books available."/>
+            ) : (
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -30,6 +35,7 @@ export default function Books() {
                             <TableCell>Category</TableCell>
                             <TableCell>State</TableCell>
                             <TableCell>Available Copies</TableCell>
+                            <TableCell align="right">Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -40,11 +46,17 @@ export default function Books() {
                                 <TableCell>{b.category}</TableCell>
                                 <TableCell>{b.state}</TableCell>
                                 <TableCell>{b.availableCopies}</TableCell>
+                                <TableCell align="right">
+                                    <Button component={RouterLink} to={`/books/${b.id}`} size="small" variant="outlined">
+                                        View
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+            )}
         </>
     )
 }

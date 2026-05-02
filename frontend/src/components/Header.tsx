@@ -1,14 +1,14 @@
 import {AppBar, Box, Button, Toolbar, Typography} from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
+import {useAuth} from "../hooks/useAuth";
 
 export default function Header() {
     const navigate = useNavigate();
-    const isAuthenticated = !!localStorage.getItem('jwt_token')
+    const {isAuthenticated, logout} = useAuth();
 
     const handleLogout = () => {
-        localStorage.removeItem('jwt_token');
+        logout();
         navigate('/login');
-
     };
 
     return (
@@ -22,7 +22,9 @@ export default function Header() {
                     <Button color={"inherit"} component={Link} to={"/books"}>Books</Button>
                     <Button color={"inherit"} component={Link} to={"/authors"}>Authors</Button>
                     <Button color={"inherit"} component={Link} to={"/countries"}>Countries</Button>
-                    <Button color={"inherit"} component={Link} to={"/statistics"}>Statistics</Button>
+                    {isAuthenticated && (
+                        <Button color={"inherit"} component={Link} to={"/statistics"}>Statistics</Button>
+                    )}
 
                     {isAuthenticated ? (
                         <Button color={"warning"} onClick={handleLogout} sx={{ml: 2}}>Logout</Button>

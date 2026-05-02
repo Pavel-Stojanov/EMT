@@ -1,6 +1,5 @@
 import {useCategoryStatistics} from "../hooks/useCategoryStatistics.ts";
 import {
-    CircularProgress,
     Paper,
     Table,
     TableBody,
@@ -10,13 +9,14 @@ import {
     TableRow,
     Typography
 } from "@mui/material";
+import {ErrorState, LoadingState} from "../components/PageState";
 
 
 export default function CategoryStatistics() {
     const {statistics, loading, error} = useCategoryStatistics();
 
-    if (loading) return <CircularProgress/>;
-    if (error) return <Typography color={"error"}>{error}</Typography>;
+    if (loading) return <LoadingState/>;
+    if (error) return <ErrorState message={error}/>;
 
     return (
         <>

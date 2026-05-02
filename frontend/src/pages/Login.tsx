@@ -1,24 +1,30 @@
-import { useState } from 'react';
-import { useNavigate,Link as RouterLink } from 'react-router-dom';
+import {useState, type FormEvent} from 'react';
+import {useLocation, useNavigate, Link as RouterLink} from 'react-router-dom';
 import {Box, Button, TextField, Typography, Paper, Alert, Link} from '@mui/material';
-import { libraryService } from '../services/libraryService';
+import {useAuth} from '../hooks/useAuth';
 
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const {login} = useAuth();
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
+        setSubmitting(true);
 
         try {
-            const response = await libraryService.login(username, password);
-            localStorage.setItem('jwt_token', response.data.token);
-            navigate('/books');
-        } catch (err) {
+            await login({username, password});
+            const state = location.state as { from?: { pathname?: string } } | null;
+            navigate(state?.from?.pathname ?? '/books', {replace: true});
+        } catch {
             setError('Incorrect username or password.');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -52,9 +58,10 @@ export default function Login() {
                         type="submit"
                         variant="contained"
                         color="primary"
+                        disabled={submitting}
                         sx={{ mt: 3 }}
                     >
-                        Login
+                        {submitting ? 'Logging in...' : 'Login'}
                     </Button>
                 </form>
                 <Typography align={"center"} variant={"body2"} sx={{ mt :2}}>

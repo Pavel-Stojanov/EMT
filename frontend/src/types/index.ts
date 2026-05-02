@@ -34,3 +34,17 @@ export interface CategoryStatistics {
     totalAvailableCopies: number;
     booksInBadState: number;
 }
+
+export interface LoginRequest {
+    username: string;
+    password: string;
+}
+
+export interface RegisterRequest extends LoginRequest {
+    name: string;
+    surname: string;
+}
+
+export interface AuthResponse {
+    token: string;
+}

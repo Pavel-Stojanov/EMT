@@ -1,18 +1,17 @@
 import {useEffect, useState} from "react";
 import type {CategoryStatistics} from "../types";
-import {libraryService} from "../services/libraryService.ts";
+import {statisticsRepository} from "../repositories/statisticsRepository";
 
 export const useCategoryStatistics = () => {
     const [statistics, setStatistics] = useState<CategoryStatistics[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<String | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchStatistics = async () => {
             try {
-                const response = await libraryService.fetchCategoryStatistics();
-                setStatistics(response.data);
-            } catch (error) {
+                setStatistics(await statisticsRepository.getCategoryStatistics());
+            } catch {
                 setError('Failed to load Statistics');
             } finally {
                 setLoading(false);
