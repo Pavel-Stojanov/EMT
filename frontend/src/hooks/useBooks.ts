@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import type {Book} from "../types";
+import {useCallback, useEffect, useState} from "react";
+import type {Book, BookRequest} from "../types";
 import {booksRepository} from "../repositories/booksRepository";
 
 export const useBooks = () => {
@@ -7,22 +7,41 @@ export const useBooks = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const refetch = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            setBooks(await booksRepository.getAll());
+        } catch {
+            setError('Error when loading books');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
-        const loadBooks = async () => {
-            try {
-                setBooks(await booksRepository.getAll());
-            } catch {
-                setError('Error when loading books')
-            } finally {
-                setLoading(false);
-            }
-        };
+        queueMicrotask(() => {
+            void refetch();
+        });
+    }, [refetch]);
 
-        loadBooks();
+    const createBook = useCallback(async (book: BookRequest) => {
+        await booksRepository.create(book);
+        await refetch();
+    }, [refetch]);
 
-    }, [])
+    const updateBook = useCallback(async (id: number, book: BookRequest) => {
+        await booksRepository.update(id, book);
+        await refetch();
+    }, [refetch]);
 
-    return {books, loading, error};
+    const deleteBook = useCallback(async (id: number) => {
+        await booksRepository.delete(id);
+        await refetch();
+    }, [refetch]);
+
+    return {books, loading, error, refetch, createBook, updateBook, deleteBook};
 };
 
 export const useBook = (id: string | undefined) => {

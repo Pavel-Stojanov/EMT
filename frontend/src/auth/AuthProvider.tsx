@@ -6,24 +6,76 @@ import {
     setUnauthorizedHandler,
 } from '../api';
 import {authRepository} from '../repositories/authRepository';
-import type {LoginRequest, RegisterRequest} from '../types';
+import type {AuthResponse, AuthUser, LoginRequest, RegisterRequest} from '../types';
 import {AuthContext} from './AuthContext';
 
 interface AuthProviderProps {
     children: ReactNode;
 }
 
-export default function AuthProvider({children}: AuthProviderProps) {
-    const [token, setToken] = useState<string | null>(() => getStoredToken());
+interface AuthSession {
+    token: string | null;
+    user: AuthUser | null;
+}
 
-    const storeToken = useCallback((nextToken: string) => {
-        setStoredToken(nextToken);
-        setToken(nextToken);
+const AUTH_USER_KEY = 'auth_user';
+
+const getStoredUser = (): AuthUser | null => {
+    const rawUser = localStorage.getItem(AUTH_USER_KEY);
+
+    if (!rawUser) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(rawUser) as AuthUser;
+    } catch {
+        localStorage.removeItem(AUTH_USER_KEY);
+        return null;
+    }
+};
+
+const setStoredUser = (user: AuthUser) => {
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+};
+
+const clearStoredUser = () => {
+    localStorage.removeItem(AUTH_USER_KEY);
+};
+
+const getStoredSession = (): AuthSession => {
+    const token = getStoredToken();
+    const user = getStoredUser();
+
+    if (token && user) {
+        return {token, user};
+    }
+
+    clearStoredToken();
+    clearStoredUser();
+
+    return {token: null, user: null};
+};
+
+export default function AuthProvider({children}: AuthProviderProps) {
+    const [session, setSession] = useState<AuthSession>(() => getStoredSession());
+    const {token, user} = session;
+
+    const storeSession = useCallback((response: AuthResponse) => {
+        const nextUser = {
+            username: response.username,
+            role: response.role,
+        };
+
+        setStoredToken(response.token);
+        setStoredUser(nextUser);
+        setSession({token: response.token, user: nextUser});
     }, []);
 
     const logout = useCallback(() => {
         clearStoredToken();
-        setToken(null);
+        clearStoredUser();
+        setSession({token: null, user: null});
     }, []);
 
     useEffect(() => {
@@ -33,21 +85,24 @@ export default function AuthProvider({children}: AuthProviderProps) {
 
     const login = useCallback(async (credentials: LoginRequest) => {
         const response = await authRepository.login(credentials);
-        storeToken(response.token);
-    }, [storeToken]);
+        storeSession(response);
+    }, [storeSession]);
 
     const register = useCallback(async (request: RegisterRequest) => {
         const response = await authRepository.register(request);
-        storeToken(response.token);
-    }, [storeToken]);
+        storeSession(response);
+    }, [storeSession]);
 
     const value = useMemo(() => ({
         token,
-        isAuthenticated: Boolean(token),
+        user,
+        role: user?.role ?? null,
+        isAdmin: user?.role === 'ROLE_ADMIN',
+        isAuthenticated: Boolean(token && user),
         login,
         register,
         logout,
-    }), [login, logout, register, token]);
+    }), [login, logout, register, token, user]);
 
     return (
         <AuthContext.Provider value={value}>

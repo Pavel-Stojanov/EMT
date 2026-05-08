@@ -1,13 +1,13 @@
 package mk.ukim.finki.library_api.web.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import mk.ukim.finki.library_api.model.dto.CreateCountryDto;
 import mk.ukim.finki.library_api.model.dto.DisplayCountryDto;
 import mk.ukim.finki.library_api.service.application.CountryApplicationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +27,21 @@ public class CountryController {
         return ResponseEntity.ok(countryApplicationService.getCountryById(id));
     }
 
+    @PostMapping("/add")
+    public ResponseEntity<DisplayCountryDto> createCountry(@Valid @RequestBody CreateCountryDto countryDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(countryApplicationService.createCountry(countryDto));
+    }
+
+    @PutMapping("/{id}/edit")
+    public ResponseEntity<DisplayCountryDto> updateCountry(@PathVariable Long id,
+                                                           @Valid @RequestBody CreateCountryDto countryDto) {
+        return ResponseEntity.ok(countryApplicationService.updateCountry(id, countryDto));
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<Void> deleteCountry(@PathVariable Long id) {
+        countryApplicationService.deleteCountry(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }

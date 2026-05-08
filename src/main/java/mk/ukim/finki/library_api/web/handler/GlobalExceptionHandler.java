@@ -1,7 +1,10 @@
 package mk.ukim.finki.library_api.web.handler;
 
+import mk.ukim.finki.library_api.model.exception.AuthorNotFoundException;
 import mk.ukim.finki.library_api.model.exception.BookNotFoundException;
+import mk.ukim.finki.library_api.model.exception.CountryNotFoundException;
 import mk.ukim.finki.library_api.model.exception.NoAvailableCopiesException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,8 +25,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
-    @ExceptionHandler({BookNotFoundException.class, NoAvailableCopiesException.class})
+    @ExceptionHandler({
+            AuthorNotFoundException.class,
+            BookNotFoundException.class,
+            CountryNotFoundException.class,
+            NoAvailableCopiesException.class
+    })
     public ResponseEntity<String> handleCustomExceptions(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDataIntegrityExceptions() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Entity cannot be deleted because it is referenced by other records.");
     }
 }

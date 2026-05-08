@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import type {Author} from '../types';
+import {useCallback, useEffect, useState} from 'react';
+import type {Author, AuthorRequest} from '../types';
 import { authorsRepository } from '../repositories/authorsRepository';
 
 export const useAuthors = () => {
@@ -7,21 +7,41 @@ export const useAuthors = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const loadAuthors = async () => {
-            try {
-                setAuthors(await authorsRepository.getAll());
-            } catch {
-                setError('Грешка при вчитување на авторите.');
-            } finally {
-                setLoading(false);
-            }
-        };
+    const refetch = useCallback(async () => {
+        setLoading(true);
+        setError(null);
 
-        loadAuthors();
+        try {
+            setAuthors(await authorsRepository.getAll());
+        } catch {
+            setError('Грешка при вчитување на авторите.');
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    return { authors, loading, error };
+    useEffect(() => {
+        queueMicrotask(() => {
+            void refetch();
+        });
+    }, [refetch]);
+
+    const createAuthor = useCallback(async (author: AuthorRequest) => {
+        await authorsRepository.create(author);
+        await refetch();
+    }, [refetch]);
+
+    const updateAuthor = useCallback(async (id: number, author: AuthorRequest) => {
+        await authorsRepository.update(id, author);
+        await refetch();
+    }, [refetch]);
+
+    const deleteAuthor = useCallback(async (id: number) => {
+        await authorsRepository.delete(id);
+        await refetch();
+    }, [refetch]);
+
+    return { authors, loading, error, refetch, createAuthor, updateAuthor, deleteAuthor };
 };
 
 export const useAuthor = (id: string | undefined) => {

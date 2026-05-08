@@ -4,6 +4,11 @@ export interface Country {
     continent: string;
 }
 
+export interface CountryRequest {
+    name: string;
+    continent: string;
+}
+
 export interface Author {
     id: number;
     name: string;
@@ -11,12 +16,42 @@ export interface Author {
     countryId: number;
 }
 
+export interface AuthorRequest {
+    name: string;
+    surname: string;
+    countryId: number;
+}
+
+export const BOOK_CATEGORIES = [
+    'NOVEL',
+    'THRILLER',
+    'HISTORY',
+    'FANTASY',
+    'BIOGRAPHY',
+    'CLASSICS',
+    'DRAMA'
+] as const;
+
+export type BookCategory = typeof BOOK_CATEGORIES[number];
+
+export const BOOK_STATES = ['GOOD', 'BAD'] as const;
+
+export type BookState = typeof BOOK_STATES[number];
+
 export interface Book {
     id: number;
     name: string;
-    category: string;
+    category: BookCategory;
     authorId: number;
-    state: string;
+    state: BookState;
+    availableCopies: number;
+}
+
+export interface BookRequest {
+    name: string;
+    category: BookCategory;
+    authorId: number;
+    state: BookState;
     availableCopies: number;
 }
 
@@ -45,6 +80,15 @@ export interface RegisterRequest extends LoginRequest {
     surname: string;
 }
 
+export type Role = 'ROLE_USER' | 'ROLE_ADMIN';
+
+export interface AuthUser {
+    username: string;
+    role: Role;
+}
+
 export interface AuthResponse {
     token: string;
+    username: string;
+    role: Role;
 }

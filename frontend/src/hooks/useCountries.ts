@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import type {Country} from '../types';
+import {useCallback, useEffect, useState} from 'react';
+import type {Country, CountryRequest} from '../types';
 import { countriesRepository } from '../repositories/countriesRepository';
 
 export const useCountries = () => {
@@ -7,21 +7,41 @@ export const useCountries = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const loadCountries = async () => {
-            try {
-                setCountries(await countriesRepository.getAll());
-            } catch {
-                setError('Грешка при вчитување на земјите.');
-            } finally {
-                setLoading(false);
-            }
-        };
+    const refetch = useCallback(async () => {
+        setLoading(true);
+        setError(null);
 
-        loadCountries();
+        try {
+            setCountries(await countriesRepository.getAll());
+        } catch {
+            setError('Грешка при вчитување на земјите.');
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    return { countries, loading, error };
+    useEffect(() => {
+        queueMicrotask(() => {
+            void refetch();
+        });
+    }, [refetch]);
+
+    const createCountry = useCallback(async (country: CountryRequest) => {
+        await countriesRepository.create(country);
+        await refetch();
+    }, [refetch]);
+
+    const updateCountry = useCallback(async (id: number, country: CountryRequest) => {
+        await countriesRepository.update(id, country);
+        await refetch();
+    }, [refetch]);
+
+    const deleteCountry = useCallback(async (id: number) => {
+        await countriesRepository.delete(id);
+        await refetch();
+    }, [refetch]);
+
+    return { countries, loading, error, refetch, createCountry, updateCountry, deleteCountry };
 };
 
 export const useCountry = (id: string | undefined) => {

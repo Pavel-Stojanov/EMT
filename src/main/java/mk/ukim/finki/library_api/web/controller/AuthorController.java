@@ -31,6 +31,12 @@ public class AuthorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(authorApplicationService.createAuthor(authorDto));
     }
 
+    @PutMapping("/{id}/edit")
+    public ResponseEntity<DisplayAuthorDto> updateAuthor(@PathVariable Long id,
+                                                         @RequestBody CreateAuthorDto authorDto) {
+        return ResponseEntity.ok(authorApplicationService.updateAuthor(id, authorDto));
+    }
+
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
         authorApplicationService.deleteAuthor(id);

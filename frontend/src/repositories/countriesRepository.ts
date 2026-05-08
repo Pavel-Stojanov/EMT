@@ -1,5 +1,5 @@
 import api from '../api';
-import type {Country} from '../types';
+import type {Country, CountryRequest} from '../types';
 
 export const countriesRepository = {
     async getAll() {
@@ -10,5 +10,19 @@ export const countriesRepository = {
     async getById(id: string) {
         const response = await api.get<Country>(`/countries/${id}`);
         return response.data;
+    },
+
+    async create(country: CountryRequest) {
+        const response = await api.post<Country>('/countries/add', country);
+        return response.data;
+    },
+
+    async update(id: number, country: CountryRequest) {
+        const response = await api.put<Country>(`/countries/${id}/edit`, country);
+        return response.data;
+    },
+
+    async delete(id: number) {
+        await api.delete(`/countries/${id}/delete`);
     },
 };

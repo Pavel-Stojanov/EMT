@@ -19,11 +19,13 @@ export default function Header() {
                 </Typography>
                 <Box>
                     <Button color={"inherit"} component={Link} to="/">Home</Button>
-                    <Button color={"inherit"} component={Link} to={"/books"}>Books</Button>
-                    <Button color={"inherit"} component={Link} to={"/authors"}>Authors</Button>
-                    <Button color={"inherit"} component={Link} to={"/countries"}>Countries</Button>
                     {isAuthenticated && (
-                        <Button color={"inherit"} component={Link} to={"/statistics"}>Statistics</Button>
+                        <>
+                            <Button color={"inherit"} component={Link} to={"/books"}>Books</Button>
+                            <Button color={"inherit"} component={Link} to={"/authors"}>Authors</Button>
+                            <Button color={"inherit"} component={Link} to={"/countries"}>Countries</Button>
+                            <Button color={"inherit"} component={Link} to={"/statistics"}>Statistics</Button>
+                        </>
                     )}
 
                     {isAuthenticated ? (

@@ -83,12 +83,7 @@ public class BookApplicationServiceImpl implements BookApplicationService {
     public void deleteBook(Long id) {
         Book book = bookService.findById(id);
 
-        if (book.getState() == State.GOOD) {
-            throw new RuntimeException("Не може да се избрише книга која е во добра состојба.");
-        }
-
         bookHistoryService.addHistoryEntry(book.getId(), "Deleted book with id " + book.getId() + " in " + LocalDateTime.now());
-
 
         bookService.delete(book);
 

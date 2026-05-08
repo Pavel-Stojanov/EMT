@@ -12,5 +12,7 @@ public interface AuthorApplicationService {
 
     DisplayAuthorDto createAuthor(CreateAuthorDto authorDto);
 
+    DisplayAuthorDto updateAuthor(Long id, CreateAuthorDto authorDto);
+
     void deleteAuthor(Long id);
 }

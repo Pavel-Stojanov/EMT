@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder; 
 
     public record LoginRequest(String username, String password) {}
-    public record LoginResponse(String token) {}
+    public record LoginResponse(String token, String username, Role role) {}
     public record RegisterRequest(String username, String password, String name, String surname) {}
 
     @PostMapping("/login")
@@ -35,8 +37,8 @@ public class AuthController {
         );
         User user = userRepository.findByUsername(request.username())
                 .orElseThrow(() -> new RuntimeException("Корисникот не е пронајден"));
-        String jwtToken = jwtService.generateToken(user);
-        return ResponseEntity.ok(new LoginResponse(jwtToken));
+        String jwtToken = jwtService.generateToken(Map.of("role", user.getRole().name()), user);
+        return ResponseEntity.ok(new LoginResponse(jwtToken, user.getUsername(), user.getRole()));
     }
 
     @PostMapping("/register")
@@ -54,7 +56,7 @@ public class AuthController {
 
         userRepository.save(user);
         
-        String jwtToken = jwtService.generateToken(user);
-        return ResponseEntity.ok(new LoginResponse(jwtToken));
+        String jwtToken = jwtService.generateToken(Map.of("role", user.getRole().name()), user);
+        return ResponseEntity.ok(new LoginResponse(jwtToken, user.getUsername(), user.getRole()));
     }
 }
